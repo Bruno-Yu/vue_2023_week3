@@ -9,7 +9,7 @@
           <div
             class="modal-header flex flex-shrink-0 items-center justify-between p-4 border-b border-gray-200 rounded-t-md">
             <!-- {{ currentItem }} -->
-            <!-- {{ tempProduct }} -->
+            {{ tempProduct }}
             <h5 class="text-xl font-medium leading-normal text-gray-800" id="exampleModalCenteredScrollableLabel">
               <span v-if="isNew">新增產品</span>
               <span v-else>編輯產品</span>
@@ -157,7 +157,7 @@
                           ease-in-out
                           m-0
                           focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
-                        " id="originPrice" v-model.number="tempProduct.originPrice" placeholder="請輸入原價" />
+                        " id="originPrice" v-model.number="tempProduct.origin_price" placeholder="請輸入原價" />
                     </div>
                   </div>
                   <div class="flex justify-center">
@@ -249,7 +249,7 @@
             </button>
             <button type="button"
               class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out ml-1"
-              @click="$emit('update-product', tempProduct)">
+              @click="confirm(tempProduct)">
               確認
             </button>
           </div>
@@ -270,18 +270,36 @@ export default {
   props: {
     currentItem: {
       type: Object,
-      default: () => { }
+      default: () => {}
     },
     isNew: {
       type: Boolean,
       default: false,
     }
   },
-  setup(props) {
-    const { currentItem } = toRefs(props);
-    const tempProduct = ref(currentItem);
+  setup(props, { emit }) {
+    const { currentItem, isNew } = toRefs(props);
+    const emptyBlank = {
+      title: '',
+      category: '',
+      description: '',
+      price: 0,
+      origin_price: 0,
+      imagesUrl: [],
+      imageUrl: '',
+      is_enabled: 0,
+    };
+    const tempProduct = isNew.value ? ref(emptyBlank) : ref(currentItem);
+    // if (isNew.value) {
+    //   console.log('isNew', isNew.value, 'currentItem', currentItem.value);
+    //   tempProduct.value = { ...emptyBlank };
+    // } else {
+    //   tempProduct.value = currentItem.value;
+    // }
+
     const imgUploadLoading = ref(false);
-    function uploadImg() { }
+
+    function uploadImg() {}
     // modal
     const modal = ref(null);
     const bsModal = ref(null);
@@ -293,9 +311,19 @@ export default {
     function hideModal() {
       bsModal.value.hide();
     }
+    function confirm(product) {
+      if (isNew.value) {
+        emit('add-product', product)
+        tempProduct.value = { ...emptyBlank };
+      } else {
+        emit('update-product', product);
+        tempProduct.value = { ...emptyBlank };
+      }
+    }
     onMounted(() => {
       bsModal.value = new Modal(modal.value);
-      console.log('editModal', bsModal.value);
+
+      console.log('editModal', currentItem.value, 'isNew', isNew.value);
       // tempProduct.value = JSON.parse(JSON.stringify(currentItem));
       // openModal.value = bsModal.value.show();
       // hideModal.value = bsModal.value.hide();
@@ -333,6 +361,7 @@ export default {
       modal,
       openModal,
       hideModal,
+      confirm,
     }
   }
 
