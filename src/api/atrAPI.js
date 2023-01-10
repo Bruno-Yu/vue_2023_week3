@@ -51,6 +51,7 @@ class atrApi extends Api {
   // 更新
   static async editAdminProduct(id, {title, category, origin_price, price, unit, description, content, is_enabled,imageUrl, imagesUrl }) {
     const params = {
+    'data':{ 
       title,
       category,
       origin_price,
@@ -61,11 +62,39 @@ class atrApi extends Api {
       is_enabled,
       imageUrl,
       imagesUrl,
-      id,
+      }
     };
     const res = await this.callAxios('PUT', `${apiPrefix}api/${apiPath}/admin/product/${id}`, params, undefined, undefined, true);
     return res;
   }
+    // 新增
+  static async addAdminProduct( {title, category, origin_price, price, unit, description, content, is_enabled,imageUrl, imagesUrl }) {
+    const params = {
+    'data':{ 
+      title,
+      category,
+      origin_price,
+      price,
+      unit,
+      description,
+      content,
+      is_enabled,
+      imageUrl,
+      imagesUrl,
+      }
+    };
+    const res = await this.callAxios('POST', `${apiPrefix}api/${apiPath}/admin/product/`, params, undefined, undefined, true);
+    return res;
+  }
+
+  // 刪除
+    static async deleteAdminProduct(id) {
+    const res = await this.callAxios('DELETE', `${apiPrefix}api/${apiPath}/admin/product/${id}`, null, undefined, undefined, true);
+    return res;
+  }
+
+
+
   // 取得單一景點
   // static async getAttraction(id) {
   //   const res = await this.callAxios('GET', `${apiPrefix}attractions/${id}`, null, undefined, false);

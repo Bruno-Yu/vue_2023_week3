@@ -4,7 +4,11 @@
       <div class="flex flex-col mb-8 xl:mb-0">
         <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div class="py-4 inline-block min-w-full sm:px-6 lg:px-8">
+            <div class="flex justify-end mb-5">
+              <button type="button" class="inline-block px-6 py-2 border-2 border-gray-800 text-gray-800 font-medium text-xs leading-tight uppercase rounded hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0 transition duration-150 ease-in-out font-bold"  @click="openNewModal">新增產品</button>
+            </div>
             <div class="overflow-hidden border border-solid border-gray-300">
+              <!-- {{ data }} -->
               <table class="min-w-full text-center ">
                 <thead class="border-b bg-gray-800">
                   <tr>
@@ -66,7 +70,7 @@
             </div>
           </div>
         </div>
-        <p class="font-semibold">目前有產品 {{ data.length }} 項</p>
+        <p class="font-semibold">目前有產品 {{ Object.keys(data).length }} 項</p>
       </div>
       <div>
         <h2 class="text-4xl mb-5 font-bold">詳情如下</h2>
@@ -95,7 +99,7 @@
         <p v-else class="text-gray-600">請選擇單一產品查看</p>
       </div>
     </div>
-    <editModal ref="modal" :currentItem="currentItem" :isNew="isNew" @update-product="editAdminProduct" />
+    <editModal ref="modal" :currentItem="currentItem" :isNew="isNew" @update-product="editAdminProduct" @add-product="addAdminProduct" />
   </main>
 </template>
 
@@ -126,15 +130,23 @@ export default {
     // const hideModal = ref(null);
     function openModal(item) {
       currentItem.value = item;
+      isNew.value = false;
       modal.value.openModal();
     }
     function hideModal() {
       modal.value.hideModal();
     }
+    function openNewModal() {
+      isNew.value = true;
+      modal.value.openModal();
+    }
     async function editAdminProduct(data) {
       const { id } = data;
-      console.log(data);
       const res = await atrApi.editAdminProduct(id, data);
+      console.log(res);
+    }
+    async function addAdminProduct(data) {
+      const res = await atrApi.addAdminProduct(data);
       console.log(res);
     }
 
@@ -166,8 +178,10 @@ export default {
       modal,
       openModal,
       hideModal,
+      openNewModal,
       isNew,
       editAdminProduct,
+      addAdminProduct,
 
     };
   }
