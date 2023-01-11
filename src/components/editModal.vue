@@ -8,8 +8,6 @@
           class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
           <div
             class="modal-header flex flex-shrink-0 items-center justify-between p-4 border-b border-gray-200 rounded-t-md">
-            <!-- {{ currentItem }} -->
-            {{ tempProduct }}
             <h5 class="text-xl font-medium leading-normal text-gray-800" id="exampleModalCenteredScrollableLabel">
               <span v-if="isNew">新增產品</span>
               <span v-else>編輯產品</span>
@@ -233,7 +231,7 @@
                   <div class="form-check form-switch">
                     <input
                       class="form-check-input appearance-none w-9 -ml-10 rounded-full float-left h-5 align-top bg-white bg-no-repeat bg-contain bg-gray-300 focus:outline-none cursor-pointer shadow-sm"
-                      type="checkbox" role="switch" v-model="tempProduct.is_enabled" id="activate">
+                      type="checkbox" role="switch" v-model="tempProduct.is_enabled"  :true-value="1" :false-value="0" id="activate"  >
                     <label class="form-check-label inline-block text-gray-800" for="activate">是否啟用</label>
                   </div>
                 </div>
@@ -262,7 +260,7 @@
 <script>
 // import atrApi from '@/api/atrAPI';
 // import { userStore } from '@/stores';
-import { ref, onMounted, toRefs } from 'vue';
+import { ref, toRefs, onMounted, watchEffect } from 'vue';
 // import { useRouter } from 'vue-router';
 import Modal from 'tw-elements/dist/src/js/bs/src/modal';
 
@@ -289,22 +287,15 @@ export default {
       imageUrl: '',
       is_enabled: 0,
     };
-    const tempProduct = isNew.value ? ref(emptyBlank) : ref(currentItem);
-    // if (isNew.value) {
-    //   console.log('isNew', isNew.value, 'currentItem', currentItem.value);
-    //   tempProduct.value = { ...emptyBlank };
-    // } else {
-    //   tempProduct.value = currentItem.value;
-    // }
-
+    // 只有 tempProduct 1個原始值
+    const tempProduct = ref({});
     const imgUploadLoading = ref(false);
 
     function uploadImg() {}
     // modal
     const modal = ref(null);
     const bsModal = ref(null);
-    // const openModal = ref(null);
-    // const hideModal = ref(null);
+
     function openModal() {
       bsModal.value.show();
     }
@@ -320,40 +311,24 @@ export default {
         tempProduct.value = { ...emptyBlank };
       }
     }
-    onMounted(() => {
-      bsModal.value = new Modal(modal.value);
-
-      console.log('editModal', currentItem.value, 'isNew', isNew.value);
-      // tempProduct.value = JSON.parse(JSON.stringify(currentItem));
-      // openModal.value = bsModal.value.show();
-      // hideModal.value = bsModal.value.hide();
+    watchEffect(() => {
+      // bsModal.value = new Modal(modal.value);
+      // console.log('watchEffect被觸發');
+      if (isNew.value) {
+        console.log('onBeforeMount', isNew.value, 'currentItem', currentItem.value);
+        tempProduct.value = { ...emptyBlank };
+      } else {
+        tempProduct.value = { ...currentItem.value };
+      }
     })
 
-    // const password = ref('');
-    // const account = ref('');
-    // const store = userStore();
-    // const router = useRouter()
+    onMounted(() => {
+      // onMount,  onBeforeMount 只有第一次觸發時建立只被觸發一次, 之後呼叫 modal 不會重新建立所以部會被觸發
+      // 只有onMounted可以處理dom掛載
+      // console.log('onMounted被觸發')
+      bsModal.value = new Modal(modal.value);
+    })
 
-    // async function login() {
-    //   const params = {
-    //     username: account.value,
-    //     password: password.value,
-    //   }
-    //   const res = await atrApi.login(params);
-    //   console.log(res);
-    //   if (res.success) {
-    //     store.$patch({ token: res.token, login: true, })
-    //     console.log(store.token, store.login);
-    //     router.push('./admin')
-    //   } else {
-    //     console.log(res.response.data.message);
-    //   }
-    // }
-    // function submit() {
-    //   if (password.value.trim && account.value.trim) {
-    //     login()
-    //   }
-    // }
     return {
       tempProduct,
       uploadImg,

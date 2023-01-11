@@ -60,7 +60,7 @@
                             class="inline-block px-4 py-1.5 bg-gray-800 text-white font-medium text-xs leading-tight uppercase hover:bg-gray-900 focus:bg-gray-900 focus:outline-none focus:ring-0 active:bg-gray-900 transition duration-150 ease-in-out"
                             @click="openModal(item)">編輯</button>
                           <button type="button"
-                            class="rounded-r inline-block px-4 py-1.5 bg-gray-800 text-white font-medium text-xs leading-tight uppercase hover:bg-gray-900 focus:bg-gray-900 focus:outline-none focus:ring-0 active:bg-gray-900 transition duration-150 ease-in-out">刪除</button>
+                            class="rounded-r inline-block px-4 py-1.5 bg-gray-800 text-white font-medium text-xs leading-tight uppercase hover:bg-gray-900 focus:bg-gray-900 focus:outline-none focus:ring-0 active:bg-gray-900 transition duration-150 ease-in-out" @click="deleteAdminProduct(item.id)">刪除</button>
                         </div>
                       </div>
                     </td>
@@ -88,11 +88,11 @@
               </p>
               <p>{{ currentItem.price }}/{{ currentItem.unit }} <span
                   class="text-gray-600 text-xs">還剩{{ currentItem.num }}個</span> </p>
-              <div v-if="currentItem.imagesUrl.length" class="grid gap-1 grid-rows-1 grid-cols-3 shadow-lg">
+              <div v-if="currentItem.imagesUrl?.length" class="grid gap-1 grid-rows-1 grid-cols-3 shadow-lg">
                 <img v-for="(item, index) in currentItem.imagesUrl" :key="index" class="h-40 w-40 block object-cover"
                   :src="item" :alt="item">
-
-              </div>
+                </div>
+                <div v-else></div>
             </div>
           </div>
         </div>
@@ -144,10 +144,12 @@ export default {
       const { id } = data;
       const res = await atrApi.editAdminProduct(id, data);
       console.log(res);
+      getAdminProducts();
     }
     async function addAdminProduct(data) {
       const res = await atrApi.addAdminProduct(data);
       console.log(res);
+      getAdminProducts();
     }
 
     async function getAdminProducts() {
@@ -157,6 +159,12 @@ export default {
       if (res.success) {
         data.value = res.products;
       }
+    }
+
+    async function deleteAdminProduct(id) {
+      const res = await atrApi.deleteAdminProduct(id);
+      console.log(res);
+      getAdminProducts();
     }
 
     onMounted(() => {
@@ -182,6 +190,7 @@ export default {
       isNew,
       editAdminProduct,
       addAdminProduct,
+      deleteAdminProduct,
 
     };
   }
