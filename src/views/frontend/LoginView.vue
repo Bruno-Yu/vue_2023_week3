@@ -93,10 +93,11 @@ export default {
         password: password.value,
       }
       const res = await atrApi.login(params);
-      console.log(res);
       if (res.success) {
-        store.$patch({ token: res.token, login: true, })
-        console.log(store.token, store.login);
+        const { token, expired } = res;
+        store.$patch({ token: token, login: true, });
+        document.cookie = `hexToken=${token};expires=${new Date(expired)}; path=/`;
+        // axios.defaults.headers.common.Authorization = token;
         router.push('./admin')
       } else {
         console.log(res.response.data.message);

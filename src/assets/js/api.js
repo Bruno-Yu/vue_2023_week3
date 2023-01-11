@@ -11,7 +11,7 @@ class Api {
   static async callAxios(method, url, params, contentType, responseType, auth) {
     const reqHeaders = {};
 
-    reqHeaders['Content-Type'] = contentType || 'application/json';
+    // reqHeaders['Content-Type'] = contentType || 'application/json';
 
     const responseTypeText = responseType || 'json';
     if (auth) {

@@ -42,20 +42,20 @@
           mt-2
           lg:mt-0
           mr-auto
-        " href="#">
+        " href="#"  @click.prevent="$router.push('./')">
           府城印象
         </a>
         <!-- Left links -->
         <ul class="navbar-nav flex flex-col pl-0 list-style-none ms-auto">
           <li class="nav-item p-2">
-            <a class="nav-link  text-white hover:opacity-80 focus:opacity-80 p-0" href="#">首頁</a>
+            <a class="nav-link  text-white hover:opacity-80 focus:opacity-80 p-0" href="#" @click.prevent="$router.push('./')" >首頁</a>
           </li>
           <li class="nav-item p-2">
-            <RouterLink class="nav-link text-white hover:opacity-80 focus:opacity-80 p-0" to="./">登出
-            </RouterLink>
+            <a class="nav-link text-white hover:opacity-80 focus:opacity-80 p-0" href="#" @click.prevent="logOut">登出
+            </a>
           </li>
           <li class="nav-item p-2">
-            <a class="nav-link text-white hover:opacity-80 focus:opacity-80 p-0" href="#">景點編輯</a>
+            <a class="nav-link text-white hover:opacity-80 focus:opacity-80 p-0" href="#"  @click.prevent="$router.push('./admin')">景點編輯</a>
           </li>
         </ul>
         <!-- Left links -->
@@ -76,10 +76,34 @@
 </template>
 
 <script>
-// import IndexView from './IndexView.vue'
+// import IndexView from './IndexView.vue';
+import { onMounted } from 'vue';
+import atrApi from '@/api/atrAPI';
+import { userStore } from '@/stores';
 
 export default {
-  // components: { IndexView }
+  setup() {
+    const store = userStore();
+    async function checkLoginStatus() {
+      const res = await atrApi.checkLoginStatus();
+      console.log(res);
+      // store.$patch({ token: token, login: true, });
+    }
+    async function logOut() {
+      const res = await atrApi.logOut();
+      console.log(res);
+      // store.$patch({ token: token, login: true, });
+    }
+
+    onMounted(() => {
+      const token = document.cookie.replace(/(?:(?:^|.*;\s*)hexToken\s*=\s*([^;]*).*$)|^.*$/, '$1');
+      store.$patch({ token: token, login: true, });
+      checkLoginStatus();
+    })
+    return {
+      logOut,
+    }
+  }
 }
 
 

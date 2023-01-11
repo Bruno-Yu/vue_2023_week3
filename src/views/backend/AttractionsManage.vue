@@ -104,7 +104,6 @@
 </template>
 
 <script>
-// import IndexView from './IndexView.vue'
 import editModal from '@/components/editModal.vue';
 //  產品資料
 import atrApi from '@/api/atrAPI';
@@ -168,11 +167,6 @@ export default {
     }
 
     onMounted(() => {
-      // data.value = products
-      // console.log('attractions', modal.value)
-      // openModal.value = modal.value.openModal();
-      // hideModal.value = modal.value.hideModal();
-
       if (store.$state.login) {
         getAdminProducts();
       } else {

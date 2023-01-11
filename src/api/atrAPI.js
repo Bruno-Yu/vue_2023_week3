@@ -39,6 +39,18 @@ class atrApi extends Api {
     return res;
   }
 
+  // 登出
+    static async logOut() {
+    const res = await this.callAxios('POST', `${apiPrefix}admin/logout`, null, undefined, undefined, false);
+    return res;
+  }
+
+  // 確認是否是登入狀態
+    static async checkLoginStatus() {
+    const res = await this.callAxios('POST', `${apiPrefix}api/user/check`, null, undefined, undefined, true);
+    return res;
+  }
+
   // admin取得景點
   static async getAdminProducts() {
     // const params = {
