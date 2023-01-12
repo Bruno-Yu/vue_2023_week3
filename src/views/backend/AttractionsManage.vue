@@ -60,7 +60,7 @@
                             class="inline-block px-4 py-1.5 bg-gray-800 text-white font-medium text-xs leading-tight uppercase hover:bg-gray-900 focus:bg-gray-900 focus:outline-none focus:ring-0 active:bg-gray-900 transition duration-150 ease-in-out"
                             @click="openModal(item)">編輯</button>
                           <button type="button"
-                            class="rounded-r inline-block px-4 py-1.5 bg-gray-800 text-white font-medium text-xs leading-tight uppercase hover:bg-gray-900 focus:bg-gray-900 focus:outline-none focus:ring-0 active:bg-gray-900 transition duration-150 ease-in-out" @click="deleteAdminProduct(item.id)">刪除</button>
+                            class="rounded-r inline-block px-4 py-1.5 bg-gray-800 text-white font-medium text-xs leading-tight uppercase hover:bg-gray-900 focus:bg-gray-900 focus:outline-none focus:ring-0 active:bg-gray-900 transition duration-150 ease-in-out" @click="openDeleteModal(item)">刪除</button>
                         </div>
                       </div>
                     </td>
@@ -100,11 +100,13 @@
       </div>
     </div>
     <editModal ref="modal" :currentItem="currentItem" :isNew="isNew" @update-product="editAdminProduct" @add-product="addAdminProduct" />
+    <infoModal ref="infoModal"  :content="messageContent" @delete-product="deleteAdminProduct" @hide-modal="hideInfoModal"/>
   </main>
 </template>
 
 <script>
 import editModal from '@/components/editModal.vue';
+import infoModal from '@/components/infoModal.vue';
 //  產品資料
 import atrApi from '@/api/atrAPI';
 import { ref, onMounted } from 'vue';
@@ -113,20 +115,43 @@ import { useRouter } from 'vue-router';
 
 
 export default {
-  components: { editModal },
+  components: { editModal, infoModal },
   setup() {
     const data = ref([]);
     const currentItem = ref({});
     const store = userStore();
     const router = useRouter();
-    const modal = ref(null);
+
+
     const isNew = ref(false);
 
     function check(prop) {
       currentItem.value = prop;
     }
-    // const openModal = ref(null);
-    // const hideModal = ref(null);
+    // 訊息視窗
+    const infoModal = ref(null);
+    const messageContent = ref({
+      title: '提示',
+      message: '',
+      status: '',
+    })
+    // 刪除視窗
+    function openDeleteModal(item) {
+      currentItem.value = item;
+      messageContent.value.title = '刪除提示';
+      messageContent.value.message = '請確認是否要刪除!';
+      messageContent.value.status = 'delete';
+      infoModal.value.openModal();
+    }
+    function hideInfoModal() {
+      infoModal.value.hideModal();
+      messageContent.value.title = '提示';
+      messageContent.value.message = '';
+      messageContent.value.status = '';
+    }
+
+    // 編輯 & 新增視窗 & 邏輯
+    const modal = ref(null);
     function openModal(item) {
       currentItem.value = item;
       isNew.value = false;
@@ -142,29 +167,68 @@ export default {
     async function editAdminProduct(data) {
       const { id } = data;
       const res = await atrApi.editAdminProduct(id, data);
-      console.log(res);
+      hideModal();
+      if (res.success) {
+        messageContent.value.message = res.message;
+        infoModal.value.openModal();
+      } else {
+        if (typeof res.response.data.message === 'string') {
+          messageContent.value.message = res.response.data.message;
+        } else {
+          messageContent.value.message = res.response.data.message.join(', ');
+        }
+        infoModal.value.openModal();
+      }
       getAdminProducts();
     }
     async function addAdminProduct(data) {
       const res = await atrApi.addAdminProduct(data);
-      console.log(res);
+      hideModal();
+      if (res.success) {
+        messageContent.value.message = res.message;
+        infoModal.value.openModal();
+      } else {
+        if (typeof res.response.data.message === 'string') {
+          messageContent.value.message = res.response.data.message;
+        } else {
+          messageContent.value.message = res.response.data.message.join(', ');
+        }
+        infoModal.value.openModal();
+      }
       getAdminProducts();
     }
 
     async function getAdminProducts() {
       const res = await atrApi.getAdminProducts();
-
-      console.log(res);
       if (res.success) {
         data.value = res.products;
+      } else {
+        if (typeof res.response.data.message === 'string') {
+          messageContent.value.message = res.response.data.message;
+        } else {
+          messageContent.value.message = res.response.data.message.join(', ');
+        }
+        infoModal.value.openModal();
       }
     }
 
-    async function deleteAdminProduct(id) {
-      const res = await atrApi.deleteAdminProduct(id);
+    async function deleteAdminProduct() {
+      hideInfoModal();
+      const res = await atrApi.deleteAdminProduct(currentItem.value.id);
       console.log(res);
+      if (res.success) {
+        messageContent.value.message = res.message;
+      } else {
+        if (typeof res.response.data.message === 'string') {
+          messageContent.value.message = res.response.data.message;
+        } else {
+          messageContent.value.message = res.response.data.message.join(', ');
+        }
+      }
+      infoModal.value.openModal();
       getAdminProducts();
     }
+
 
     onMounted(() => {
       if (store.$state.login) {
@@ -178,9 +242,13 @@ export default {
       currentItem,
       check,
       modal,
+      infoModal,
+      messageContent,
       openModal,
       hideModal,
       openNewModal,
+      openDeleteModal,
+      hideInfoModal,
       isNew,
       editAdminProduct,
       addAdminProduct,

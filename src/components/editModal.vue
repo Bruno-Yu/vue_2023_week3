@@ -258,10 +258,7 @@
 </template>
 
 <script>
-// import atrApi from '@/api/atrAPI';
-// import { userStore } from '@/stores';
 import { ref, toRefs, onMounted, watchEffect } from 'vue';
-// import { useRouter } from 'vue-router';
 import Modal from 'tw-elements/dist/src/js/bs/src/modal';
 
 export default {
@@ -312,10 +309,7 @@ export default {
       }
     }
     watchEffect(() => {
-      // bsModal.value = new Modal(modal.value);
-      // console.log('watchEffect被觸發');
       if (isNew.value) {
-        console.log('onBeforeMount', isNew.value, 'currentItem', currentItem.value);
         tempProduct.value = { ...emptyBlank };
       } else {
         tempProduct.value = { ...currentItem.value };
@@ -325,7 +319,6 @@ export default {
     onMounted(() => {
       // onMount,  onBeforeMount 只有第一次觸發時建立只被觸發一次, 之後呼叫 modal 不會重新建立所以部會被觸發
       // 只有onMounted可以處理dom掛載
-      // console.log('onMounted被觸發')
       bsModal.value = new Modal(modal.value);
     })
 

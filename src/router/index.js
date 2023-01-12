@@ -13,30 +13,10 @@ const router = createRouter({
           path: '/',
           component: () => import('../views/frontend/HomeView.vue'),
         },
-        // {
-        //   path: '/attractions',
-        //   component: () => import('../views/frontend/AttractionsView.vue'),
-        // },
-        // {
-        //   path: '/attractions/:id',
-        //   component: () => import('../views/frontend/AttractionView.vue'),
-        // },
-        // {
-        //   path: '/attractions',
-        //   component: () => import('../views/frontend/AttractionsView.vue'),
-        // },
-        // {
-        //   path: '/signup',
-        //   component: () => import('../views/frontend/SignUpView.vue'),
-        // },
         {
           path: '/login',
           component: () => import('../views/frontend/LoginView.vue'),
         },
-        // {
-        //   path: '/member/content',
-        //   component: () => import('../views/frontend/LoginView.vue'),
-        // },
       ],
     },
     {

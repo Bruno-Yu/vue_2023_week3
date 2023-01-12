@@ -7,28 +7,6 @@ const apiPath = import.meta.env.VITE_APP_PATH;
 
 // Api 自 Api 繼承所有屬性與方法
 class atrApi extends Api {
-  // 註冊
-  // static async signUp({
-  //   email, password, nickName, roleId,
-  // }) {
-  //   const params = {
-  //     email, password, nickName, roleId,
-  //   };
-  //   const res = await this.callAxios('POST', `${apiPrefix}signup`, params, undefined, false);
-  //   return res;
-  // }
-
-  // 註冊新增 collections 欄
-  // static async signAddCollection({
-  //   userId,
-  // }) {
-  //   const params = {
-  //     userId,
-  //     attractionId: [],
-  //   };
-  //   const res = await this.callAxios('POST', `${apiPrefix}collections`, params, undefined, false);
-  //   return res;
-  // }
 
   // 登入
   static async login({ username, password }) {
@@ -41,7 +19,7 @@ class atrApi extends Api {
 
   // 登出
     static async logOut() {
-    const res = await this.callAxios('POST', `${apiPrefix}admin/logout`, null, undefined, undefined, false);
+    const res = await this.callAxios('POST', `${apiPrefix}logout`, null, undefined, undefined, true);
     return res;
   }
 

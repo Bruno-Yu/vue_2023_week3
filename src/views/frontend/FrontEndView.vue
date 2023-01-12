@@ -61,8 +61,6 @@
         </ul>
         <!-- Left links -->
       </div>
-      <!-- Collapsible wrapper -->
-
     </div>
   </nav>
   <main class="container mx-auto">
@@ -75,13 +73,3 @@
     </p>
   </footer>
 </template>
-
-<script>
-// import IndexView from './IndexView.vue'
-
-export default {
-  // components: { IndexView }
-}
-
-
-</script>

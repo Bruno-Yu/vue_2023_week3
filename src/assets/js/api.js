@@ -41,8 +41,9 @@ class Api {
         if (status === 200) {
           resolve(data);
         } else {
-          reject(new Error(''));
-          this.$message.error(data.message);
+          // reject(new Error(''));
+          // this.$message.error(data.message);
+          reject(data);
         }
       });
     } catch (error) {

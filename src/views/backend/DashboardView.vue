@@ -73,25 +73,49 @@
       府城印象 @copyRight
     </p>
   </footer>
+    <infoModal ref="infoModal"  :content="messageContent"  @hide-modal="hideInfoModal"/>
 </template>
 
 <script>
 // import IndexView from './IndexView.vue';
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import atrApi from '@/api/atrAPI';
 import { userStore } from '@/stores';
+import { useRouter } from 'vue-router'
+import infoModal from '@/components/infoModal.vue';
 
 export default {
+  components: { infoModal },
   setup() {
     const store = userStore();
+    const router = useRouter()
+    const infoModal = ref(null);
+    const messageContent = ref({
+      title: '提示',
+      message: '',
+      status: '',
+    })
+    function hideInfoModal() {
+      infoModal.value.hideModal();
+      messageContent.value.title = '提示';
+      messageContent.value.message = '';
+      messageContent.value.status = '';
+    }
+
     async function checkLoginStatus() {
       const res = await atrApi.checkLoginStatus();
-      console.log(res);
-      // store.$patch({ token: token, login: true, });
+      if (!res.success) {
+        router.push('/');
+      }
     }
     async function logOut() {
       const res = await atrApi.logOut();
-      console.log(res);
+      if (res.success) {
+        router.push('/');
+      } else {
+        messageContent.value.message = res.response.data.message;
+        infoModal.value.openModal();
+      }
       // store.$patch({ token: token, login: true, });
     }
 
@@ -102,6 +126,9 @@ export default {
     })
     return {
       logOut,
+      hideInfoModal,
+      messageContent,
+      infoModal,
     }
   }
 }
